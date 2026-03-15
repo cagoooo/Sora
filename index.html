@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sora AI 旅遊影片全記錄 | 輕鬆打造專屬回憶</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+        
+        /* Hide scrollbar for a cleaner look but keep functionality */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Glassmorphism Header */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Card Hover Effects */
+        .hover-card {
+            transition: all 0.3s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Colorful Gradients for specific sections */
+        .gradient-bg-1 { background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%); }
+        .gradient-bg-2 { background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); }
+        .gradient-bg-3 { background: linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%); }
+        .gradient-bg-4 { background: linear-gradient(120deg, #fccb90 0%, #d57eeb 100%); }
+
+        /* Animated Button */
+        .btn-interactive {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-interactive::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.5s ease;
+        }
+        .btn-interactive:hover::after {
+            left: 100%;
+        }
+        .btn-interactive:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="glass-nav fixed w-full z-50 top-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="scrollToSection('hero')">
+                    <i class="fa-solid fa-plane-departure text-brand-500 text-2xl mr-2"></i>
+                    <span class="font-bold text-xl text-slate-800 tracking-wider">AI 旅遊全記錄</span>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-2">
+                    <button onclick="scrollToSection('pain-points')" class="px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-brand-500 hover:bg-brand-100 transition">旅行痛點</button>
+                    <button onclick="scrollToSection('one-minute')" class="px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-brand-500 hover:bg-brand-100 transition">一分鐘記錄法</button>
+                    <button onclick="scrollToSection('sora-guide')" class="px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-brand-500 hover:bg-brand-100 transition">Sora 教學</button>
+                    <button onclick="scrollToSection('videos')" class="px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 transition shadow-md">精選影片</button>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-500 hover:text-brand-500 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg absolute w-full">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="scrollToSection('pain-points'); toggleMenu();" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-brand-500 hover:bg-gray-50">旅行痛點</button>
+                <button onclick="scrollToSection('one-minute'); toggleMenu();" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-brand-500 hover:bg-gray-50">一分鐘記錄法</button>
+                <button onclick="scrollToSection('sora-guide'); toggleMenu();" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-brand-500 hover:bg-gray-50">Sora 教學</button>
+                <button onclick="scrollToSection('videos'); toggleMenu();" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-purple-600 hover:bg-purple-50">精選影片作品</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="pt-24 pb-12 lg:pt-32 lg:pb-24 overflow-hidden relative">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-purple-300 mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+            <div class="absolute top-12 -right-24 w-96 h-96 rounded-full bg-yellow-300 mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-24 left-1/2 w-96 h-96 rounded-full bg-pink-300 mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-tight mb-6">
+                    告別流水帳！<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-pink-500">AI 與 Sora 讓你成為旅行影片主角</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-600 mb-8">
+                    整合 ChatGPT、Google 相簿、Notion 與最新的 Sora 生成式 AI，解決記錄旅行的 7 大痛點。用「一分鐘記錄法」輕鬆保存當下感動！
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="scrollToSection('one-minute')" class="btn-interactive group px-8 py-4 rounded-full bg-gradient-to-r from-brand-600 to-indigo-600 text-white font-bold text-lg shadow-lg shadow-brand-500/40 hover:shadow-brand-500/60 transition-all duration-300 border border-transparent hover:border-white/20">
+                        <i class="fa-solid fa-stopwatch mr-2 group-hover:animate-pulse"></i> 開始一分鐘記錄法
+                    </button>
+                    <button onclick="scrollToSection('videos')" class="btn-interactive group px-8 py-4 rounded-full bg-white text-slate-800 font-bold text-lg shadow-lg border-2 border-slate-100 hover:border-brand-500 hover:text-brand-600 transition-all duration-300">
+                        <i class="fa-solid fa-play mr-2 text-brand-500 group-hover:scale-110 transition-transform"></i> 觀看 AI 影片成品
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: 7 Pain Points -->
+    <section id="pain-points" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-pink-500 font-bold tracking-wider uppercase text-sm">Pain Points</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">為什麼你的旅行照片總是躺在相簿裡？</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">不是不想記，是「太麻煩、不知道怎麼記、記了不好用」。剖析旅行記錄的七大系統性崩壞。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Point 1 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <div class="w-12 h-12 rounded-full gradient-bg-1 flex items-center justify-center text-white text-xl mb-4 shadow-sm">
+                        <i class="fa-solid fa-question"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">1. 選擇困難</h3>
+                    <p class="text-slate-600 text-sm">不知道該記什麼。行程、花費、心情、照片…什麼才重要？當下覺得沒必要，回來才發現忘了很多細節。</p>
+                </div>
+                <!-- Point 2 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <div class="w-12 h-12 rounded-full gradient-bg-2 flex items-center justify-center text-white text-xl mb-4 shadow-sm">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">2. 時間壓力</h3>
+                    <p class="text-slate-600 text-sm">當下沒時間記。旅途中一直在走行程、趕車，晚上太累，想記卻拖到最後就放棄。</p>
+                </div>
+                <!-- Point 3 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <div class="w-12 h-12 rounded-full gradient-bg-3 flex items-center justify-center text-white text-xl mb-4 shadow-sm">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">3. 記錄太零散</h3>
+                    <p class="text-slate-600 text-sm">照片在手機，感想在腦袋，行程在不同 App 或紙本。之後很難整合、回顧或分享。</p>
+                </div>
+                <!-- Point 4 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <div class="w-12 h-12 rounded-full gradient-bg-4 flex items-center justify-center text-white text-xl mb-4 shadow-sm">
+                        <i class="fa-solid fa-boxes-packing"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">4. 整理很痛苦</h3>
+                    <p class="text-slate-600 text-sm">記了一堆流水帳，回來要整理成遊記、貼文或推薦清單很花時間，成為沈重的負擔。</p>
+                </div>
+                <!-- Point 5 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 flex items-center justify-center text-white text-xl mb-4 shadow-sm">
+                        <i class="fa-solid fa-comment-slash"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">5. 表達瓶頸</h3>
+                    <p class="text-slate-600 text-sm">想記心情，卻寫不出來。當下感受很真實，但不知道怎麼用文字表達，覺得自己「不會寫」。</p>
+                </div>
+                <!-- Point 6 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center text-white text-xl mb-4 shadow-sm">
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">6. 工具太難用</h3>
+                    <p class="text-slate-600 text-sm">App 太複雜，要一直切換、輸入很多欄位，反而造成負擔。記錄變成了數據輸入工作。</p>
+                </div>
+                <!-- Point 7 -->
+                <div class="hover-card bg-slate-50 rounded-2xl p-6 border border-slate-100 md:col-span-2 lg:col-span-3">
+                    <div class="flex items-start">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl mr-4 shadow-sm flex-shrink-0">
+                            <i class="fa-solid fa-signs-post"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">7. 用途不明確</h3>
+                            <p class="text-slate-600 text-sm">不確定是要給自己回憶，還是要分享給朋友、經營社群。因為不知道該用哪種記錄方式，導致最後兩頭空。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: 1-Minute Method -->
+    <section id="one-minute" class="py-16 bg-slate-50 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-brand-100 opacity-50"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <span class="text-brand-600 font-bold tracking-wider uppercase text-sm">The Solution</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">一分鐘旅遊紀錄法</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto text-lg">拒絕完美主義，找回紀錄的樂趣。每天只要一次，每次只要一分鐘！只記四件事。</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8 items-center">
+                <div class="w-full lg:w-1/2">
+                    <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 relative">
+                        <div class="absolute -top-6 -left-6 w-16 h-16 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-2xl transform rotate-12 flex items-center justify-center shadow-lg">
+                            <i class="fa-solid fa-stopwatch text-white text-3xl transform -rotate-12"></i>
+                        </div>
+                        <ul class="space-y-6 mt-4">
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 font-bold mr-4 shrink-0 mt-1"><i class="fa-solid fa-location-dot"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-lg">1. 今天在哪 (定位與亮點)</h4>
+                                    <p class="text-slate-500 text-sm">記錄你所在的城市、景點或國家。例如：<span class="text-slate-700 italic">京都・伏見稻荷</span></p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 font-bold mr-4 shrink-0 mt-1"><i class="fa-solid fa-star"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-lg">2. 最有感的一件事</h4>
+                                    <p class="text-slate-500 text-sm">捕捉一個畫面、一句話、或一個感受。例如：<span class="text-slate-700 italic">傍晚走在鳥居間，遊客突然變少，很安靜。</span></p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-pink-100 text-pink-600 font-bold mr-4 shrink-0 mt-1"><i class="fa-solid fa-camera"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-lg">3. 一張代表照片</h4>
+                                    <p class="text-slate-500 text-sm">不挑最美，只選「最能代表今天」的照片。當下真實就好，手機相簿第1張也可！</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 font-bold mr-4 shrink-0 mt-1"><i class="fa-solid fa-comment"></i></span>
+                                <div>
+                                    <h4 class="font-bold text-lg">4. 一句心情 (可選)</h4>
+                                    <p class="text-slate-500 text-sm">用一兩個詞形容當下狀態：開心 / 累爆 / 想家。例如：<span class="text-slate-700 italic">腳快斷了，但很值得。</span></p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="w-full lg:w-1/2 space-y-6">
+                    <div class="bg-gradient-to-r from-teal-400 to-emerald-500 rounded-2xl p-6 text-white shadow-lg hover-card">
+                        <h3 class="font-bold text-xl mb-2"><i class="fa-solid fa-mobile-screen mr-2"></i> 記在哪裡最省事？</h3>
+                        <p class="opacity-90">選「你一定會打開的地方」就好。手機備忘錄 (最快速)、LINE 傳給自己，或是 Notion (習慣使用者)。一天一小段，累積成一篇。</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg hover-card">
+                        <h3 class="font-bold text-xl mb-2"><i class="fa-solid fa-bed mr-2"></i> 懶人終極升級版</h3>
+                        <p class="opacity-90">當你真的累到不行的時候... 只記這一句就好：<br><strong class="text-yellow-200 text-lg">「今天最值得記住的是_____」</strong><br>即使只有一句話，也比空白強大。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: AI Tools -->
+    <section class="py-16 bg-white">
+         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-blue-500 font-bold tracking-wider uppercase text-sm">Smart Tools</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">善用工具，讓 AI 幫你寫遊記</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6 border border-slate-100 rounded-2xl hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Google_Photos_icon_%282020%29.svg/512px-Google_Photos_icon_%282020%29.svg.png" alt="Google Photos" class="w-16 h-16 mx-auto mb-4 object-contain">
+                    <h3 class="font-bold text-xl mb-2">Google 相簿定位</h3>
+                    <p class="text-slate-600 text-sm">不用死記地名！打開手機定位拍照，連上 WiFi 自動備份。查看相片「資訊」即可精準回想地點 (如：阿旃陀石窟)。</p>
+                </div>
+                
+                <div class="text-center p-6 border border-slate-100 rounded-2xl hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Google_Gemini_logo.svg/512px-Google_Gemini_logo.svg.png" alt="Google Gemini" class="w-16 h-16 mx-auto mb-4 object-contain">
+                    <h3 class="font-bold text-xl mb-2">Gemini 影像辨識</h3>
+                    <p class="text-slate-600 text-sm">導遊講太多記不住？拍張相片傳給 AI！例如上傳「黃金球」照片，Gemini 會立刻告訴你這是曙光村的 Matrimandir 及歷史背景。</p>
+                </div>
+
+                <div class="text-center p-6 border border-slate-100 rounded-2xl hover:shadow-xl transition-shadow duration-300">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" alt="Notion" class="w-16 h-16 mx-auto mb-4 object-contain">
+                    <h3 class="font-bold text-xl mb-2">Notion & NotebookLM</h3>
+                    <p class="text-slate-600 text-sm">將凌亂的對話或零散的筆記丟給 NotebookLM，一鍵產出資訊圖表與簡報。在 Notion 中完美整合文案、相片與影片。</p>
+                </div>
+            </div>
+         </div>
+    </section>
+
+    <!-- Section: Sora Guide -->
+    <section id="sora-guide" class="py-16 bg-slate-900 text-white relative overflow-hidden">
+        <!-- Decorative elements -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+            <div class="absolute top-[20%] left-[10%] w-32 h-32 bg-blue-500 rounded-full mix-blend-screen filter blur-[50px] opacity-40"></div>
+            <div class="absolute bottom-[20%] right-[10%] w-48 h-48 bg-purple-500 rounded-full mix-blend-screen filter blur-[60px] opacity-40"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-cyan-400 font-bold tracking-wider uppercase text-sm">Video Generation</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">Sora AI 影片生成指南</h2>
+                <p class="text-slate-300 max-w-2xl mx-auto">OpenAI 打造的全新影片應用程式，將你的點子化為現實，讓你和朋友成為最佳卡司！</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- PC Version -->
+                <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700 p-8 rounded-3xl hover-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold flex items-center"><i class="fa-solid fa-desktop text-cyan-400 mr-3"></i> 電腦版安裝與設定</h3>
+                    </div>
+                    <ol class="space-y-4 text-slate-300">
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-cyan-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">1</span>
+                            <p>前往網址：<code class="bg-slate-900 px-2 py-1 rounded text-pink-400">sora.chatgpt.com</code></p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-cyan-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">2</span>
+                            <p>點擊登入，並使用 Google 帳戶繼續 (允許 OpenAI 存取資訊)。</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-cyan-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">3</span>
+                            <p>設定 Username (若顯示 <span class="text-red-400">Username is taken</span> 表示被用過了，請更換)。</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-cyan-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">4</span>
+                            <p>點擊 <strong>Enter invite code</strong>，輸入手機版取得的邀請碼。</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-cyan-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">5</span>
+                            <p>左下角點選 <strong>Settings</strong> -> <strong>Account</strong>，可將 Language 更改為 <strong class="text-white">中文 (Traditional)</strong>。</p>
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Mobile Version -->
+                <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700 p-8 rounded-3xl hover-card">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold flex items-center"><i class="fa-solid fa-mobile-screen text-purple-400 mr-3"></i> 手機版：影片你當主角</h3>
+                    </div>
+                    <ol class="space-y-4 text-slate-300">
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-purple-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">1</span>
+                            <p>App Store 下載 <strong>Sora by OpenAI</strong> (目前限受邀者)。</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-purple-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">2</span>
+                            <p><strong>掃瞄人臉與聲音：</strong>點選「新增角色」錄製臉型聲音，約1分鐘學習，你就能當影片主角！</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-purple-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">3</span>
+                            <p><strong>創建影片：</strong>點擊 [+] 號，選擇「客串」(第一個就是你)，使用<strong class="text-white">語音輸入</strong>中文提示詞 (打繁體字可能會亂碼，唸中文或打英文OK)。</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-purple-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">4</span>
+                            <p><strong>客串存取權：</strong>設定誰可以使用你的影像 (只有我 / 我核准的人 / 所有人)。</p>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="bg-slate-700 text-purple-400 font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">5</span>
+                            <p>影片長度可選 10秒 (耗費1次額度) 或 15秒 (耗費2次額度)，完成後可從草稿區發佈。</p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-yellow-900/40 border border-yellow-700/50 rounded-xl p-4 flex items-start gap-4">
+                <i class="fa-solid fa-triangle-exclamation text-yellow-500 text-xl mt-1"></i>
+                <p class="text-sm text-yellow-200"><strong>限制注意：</strong> Sora 產生影片時，不要在提示詞中出現具版權的文字、圖像或 IP。提示詞中盡量不要要求影片內出現文字，目前生成繁體中文字容易產生亂碼。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: YouTube Links / Showcase -->
+    <section id="videos" class="py-20 bg-gradient-to-b from-slate-50 to-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-indigo-500 font-bold tracking-wider uppercase text-sm">Showcase & Resources</span>
+                <h2 class="text-3xl md:text-4xl font-bold mt-2 mb-4">精選旅遊影片與 AI 作品</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">點擊下方按鈕觀看實際使用 AI 生成與整理的旅遊影片成果 (將於新分頁開啟)。</p>
+            </div>
+
+            <div class="flex flex-col gap-6 max-w-4xl mx-auto">
+                
+                <!-- Link 1 -->
+                <a href="https://www.youtube.com/shorts/tHrqXNnn0oA" target="_blank" rel="noopener noreferrer" 
+                   class="btn-interactive group flex items-center justify-between p-6 bg-white rounded-2xl shadow-md border-l-8 border-blue-500 hover:shadow-xl">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                            <i class="fa-brands fa-youtube text-2xl text-blue-500 group-hover:text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800">印度孟買象島石窟介紹</h3>
+                            <p class="text-slate-500 text-sm mt-1">一般介紹與中文普通旁白介紹版</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-slate-300 group-hover:text-blue-500 text-xl transition-colors"></i>
+                </a>
+
+                <!-- Link 2 -->
+                <a href="https://www.youtube.com/shorts/47-j2wRJEjo" target="_blank" rel="noopener noreferrer" 
+                   class="btn-interactive group flex items-center justify-between p-6 bg-white rounded-2xl shadow-md border-l-8 border-purple-500 hover:shadow-xl">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center shrink-0 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-user-astronaut text-2xl text-purple-500 group-hover:text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800">你當影片主角！</h3>
+                            <p class="text-slate-500 text-sm mt-1">@lubloger 聰賢老師在印度孟買象島石窟旅遊 (Sora 生成)</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-slate-300 group-hover:text-purple-500 text-xl transition-colors"></i>
+                </a>
+
+                <!-- Link 3 -->
+                <a href="https://youtube.com/shorts/tb3Z0lgZdsQ" target="_blank" rel="noopener noreferrer" 
+                   class="btn-interactive group flex items-center justify-between p-6 bg-white rounded-2xl shadow-md border-l-8 border-pink-500 hover:shadow-xl">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-pink-100 flex items-center justify-center shrink-0 group-hover:bg-pink-500 group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-pink-500 group-hover:text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-slate-800">Sora AI 製作影片示範</h3>
+                            <p class="text-slate-500 text-sm mt-1">使用 Sora 創作的旅遊影片短影音</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-slate-300 group-hover:text-pink-500 text-xl transition-colors"></i>
+                </a>
+
+                <!-- Link 4 (Playlist) -->
+                <a href="https://www.youtube.com/watch?v=tb3Z0lgZdsQ&list=PLU-8o76TOvQVsuGhyi_gtPmM3lNaorBYT" target="_blank" rel="noopener noreferrer" 
+                   class="btn-interactive group flex items-center justify-between p-6 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-lg border-l-8 border-brand-500 hover:shadow-2xl">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center shrink-0 border border-brand-500/50">
+                            <i class="fa-solid fa-list-ul text-2xl text-brand-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl text-white">完整播放清單：AI 旅遊影片全記錄</h3>
+                            <p class="text-slate-400 text-sm mt-1">YouTube 系統化整理，包含所有相關教學與示範</p>
+                        </div>
+                    </div>
+                    <span class="bg-brand-600 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 group-hover:bg-brand-500 transition-colors">
+                        馬上觀看 <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-plane-departure text-brand-500"></i>
+                <span class="text-slate-200 font-bold">AI 旅遊全記錄教學網</span>
+            </div>
+            <p class="text-sm">資料來源：Sora 教學講義、一分鐘記錄法、七大痛點剖析</p>
+            <div class="text-sm">
+                &copy; 2026. Designed with Tailwind CSS & JavaScript.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactions -->
+    <script>
+        // Smooth scroll function for navigation
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                // Account for fixed header height (approx 64px)
+                const headerOffset = 64;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        // Mobile menu toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', toggleMenu);
+
+        function toggleMenu() {
+            menu.classList.toggle('hidden');
+        }
+
+        // Navbar blur and shadow on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-md');
+                nav.classList.replace('bg-white/0', 'bg-white/80');
+            } else {
+                nav.classList.remove('shadow-md');
+                nav.classList.replace('bg-white/80', 'bg-white/0');
+            }
+        });
+    </script>
+</body>
+</html>
